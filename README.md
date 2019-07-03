@@ -37,4 +37,8 @@ A full scan usually takes around 2-3 hours for large repositories. Upon completi
 
 # Get Suggestions
 
-# Spreading & Retention
+You can ask for suggestions, once the scanning is complete. Simply, ask for Sofia's recommendation by making the following comment on your pull request.
+
+```
+@SofiaRec suggest learners
+```

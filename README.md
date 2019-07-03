@@ -51,7 +51,7 @@ You can ask for suggestions, once the scanning is complete. Simply, ask for Sofi
 @SofiaRec suggest learners
 ```
 
-You can also set the number of candidates using the **_top_** argument. the default value is 10.
+You can also set the number of candidates using the **_top_** argument. The default value is 10.
 
 ```
 @SofiaRec suggest learners top 5

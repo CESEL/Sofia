@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>353d53e1-2bb8-4033-b00e-76312f803cd2</UserSecretsId>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="BouncyCastle" Version="1.8.5" />
+    <PackageReference Include="GitHubJwt" Version="0.0.3" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.4" />
+    <PackageReference Include="Hangfire.Autofac" Version="2.3.1" />
+    <PackageReference Include="HangFire.Core" Version="1.7.4" />
+    <PackageReference Include="HangFire.SqlServer" Version="1.7.4" />
+    <PackageReference Include="JWT" Version="5.2.1" />
+    <PackageReference Include="KaftarCQRS" Version="0.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.7.11" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Octokit.Bot" Version="0.9.5" />
+    <PackageReference Include="Seq.Extensions.Logging" Version="4.0.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.4" />
+    <PackageReference Include="Serilog.Extensions.Logging.ApplicationInsights" Version="1.1.0" />
+    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sofia.Data\Sofia.Data.csproj" />
+    <ProjectReference Include="..\Sofia.InformationGathering\Sofia.InformationGathering.csproj" />
+    <ProjectReference Include="..\Sofia.Jobs\Sofia.Jobs.csproj" />
+    <ProjectReference Include="..\Sofia.WebHooksHandling\Sofia.WebHooksHandling.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="repos\dotnet\corefx\src\Common\src\CoreLib\System\Numerics\ConstantHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="repos\dotnet\corefx\src\Common\src\CoreLib\System\Numerics\Vector.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -26,7 +26,7 @@ Sofia is a GitHub application. First, you need to [install](https://github.com/a
 After installing Sofia, you need to ask Sofia to scan your repository. During the scanning:
 
  1. Sofia clones your repository to gather commits and all changes.
- 2. Sofia fetches all of the merged pull requests and reviewers.
+ 2. Sofia fetches all of the merged pull requests and their reviewers.
  3. Using commits and reviewers, Sofia builds the knowledge model of your project.
  
 After scanning the project, Sofia keeps the model up to date using GitHub WebHooks to analyze events in real time.

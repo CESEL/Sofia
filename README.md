@@ -51,6 +51,12 @@ You can ask for suggestions, once the scanning is complete. Simply, ask for Sofi
 @SofiaRec suggest learners
 ```
 
+You can also set the number of candidates using the **_top_** argument.
+
+```
+@SofiaRec suggest learners top 5
+```
+
 ![Image description](https://raw.githubusercontent.com/mirsaeedi/Sofia/master/src/Sofia/wwwroot/img/suggestions.PNG)
 
 

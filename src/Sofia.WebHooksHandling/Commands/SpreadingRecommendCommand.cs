@@ -19,7 +19,7 @@ namespace Sofia.WebHooksHandling.Commands
 
         public bool IsMatch(string action, string[] parts, string authorAssociation, EventContext eventContext)
         {
-            if (parts.Length != 3)
+            if (parts.Length != 3 && parts.Length !=5)
                 return false;
 
             if (action != "created")
@@ -37,6 +37,15 @@ namespace Sofia.WebHooksHandling.Commands
             if (parts[2] != "learners")
                 return false;
 
+            if (parts.Length == 5)
+            {
+                if (parts[3] != "top")
+                    return false;
+
+                if (!int.TryParse(parts[4], out _))
+                    return false;
+            }
+
             return true;
         }
 
@@ -46,6 +55,13 @@ namespace Sofia.WebHooksHandling.Commands
             var issueNumber = (int)eventContext.WebHookEvent.GetPayload().issue.number;
             var repositoryId = (long)eventContext.WebHookEvent.GetPayload().repository.id;
             var subscription = await dbContext.Subscriptions.SingleOrDefaultAsync(q => q.RepositoryId == repositoryId);
+
+            var top = 10;
+
+            if (parts.Length == 5)
+            {
+                top = int.Parse(parts[4]);
+            }
 
             if (subscription == null)
             {
@@ -68,7 +84,7 @@ namespace Sofia.WebHooksHandling.Commands
 
             try
             {
-                await GetCandidates(eventContext, dbContext, issueNumber, repositoryId, subscription);
+                await GetCandidates(eventContext, dbContext, issueNumber, repositoryId, subscription, top);
             }
             catch (NotFoundException e)
             {
@@ -79,7 +95,7 @@ namespace Sofia.WebHooksHandling.Commands
 
         }
 
-        private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription)
+        private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
         {
             var installationClient = eventContext.InstallationContext.Client;
             var recommender = new CodeReviewerRecommender(dbContext);
@@ -87,7 +103,7 @@ namespace Sofia.WebHooksHandling.Commands
             var pullRequest = await installationClient.PullRequest.Get(repositoryId, issueNumber);
             var pullRequestFiles = await installationClient.PullRequest.Files(repositoryId, issueNumber);
 
-            var candidates = await recommender.Recommend(subscription.Id, pullRequest, pullRequestFiles);
+            var candidates = await recommender.Recommend(subscription.Id, pullRequest, pullRequestFiles, topCandidatesLength);
 
             await SaveCandidates(dbContext, candidates, pullRequest, subscription);
 

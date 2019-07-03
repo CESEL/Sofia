@@ -13,7 +13,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
     public class PersistBasedSpreadingRecommender : Recommender
     {
         private SofiaDbContext _dbContext;
-        private Dictionary<string, PersistBasedSpreadingCandidate> _dicCandidates;
+        private Dictionary<string, PersistBasedSpreadingCandidate> _dicCandidates = new Dictionary<string, PersistBasedSpreadingCandidate>();
         private PersistBasedSpreadingCandidate[] _candidates;
         private List<long> _fileIds = new List<long>();
 
@@ -24,11 +24,36 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
 
         public async Task ScoreCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
-            await Init(subscriptionId, pullRequest, pullRequestFiles);
-            await ScoreCandidates(subscriptionId,pullRequestFiles);
+            await GetCandidates(subscriptionId, pullRequest, pullRequestFiles);
+
+            if (AllCandidatesHaveZeroScore())
+            {
+                await FindFolderLevelCandidates(subscriptionId, pullRequest, pullRequestFiles);
+            }
+        }
+
+
+
+        private async Task GetCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        {
+            var files = await GetFiles(subscriptionId, pullRequestFiles);
+            FindCandidates(subscriptionId, pullRequest, files);
+            await ScoreCandidates(subscriptionId, pullRequestFiles);
+        }
+
+        private bool AllCandidatesHaveZeroScore()
+        {
+            return _dicCandidates.Count == 0 && _dicCandidates.All(q=>q.Value.Score==0);
         }
 
         private async Task ScoreCandidates(long subscriptionId,IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        {
+            await CalculateCandidatesScores(subscriptionId, pullRequestFiles);
+
+            SortCandidates();
+        }
+
+        private async Task CalculateCandidatesScores(long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
             var totalEffort = await GetTotalEffort(subscriptionId, _dbContext);
 
@@ -37,12 +62,12 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
                 var candidateEffort = await GetCandidateEffort(candidate, _dbContext);
                 candidate.Meta.GlobalTotalCommits = candidateEffort.TotalCommts;
                 candidate.Meta.GlobalTotalReviews = candidateEffort.TotalReviews;
-                candidate.Meta.LocalTotalCommits = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f=>f==q.FileId));
+                candidate.Meta.LocalTotalCommits = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f => f == q.FileId));
                 candidate.Meta.LocalTotalReviews = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Review && _fileIds.Any(f => f == q.FileId));
-                candidate.Meta.TotalTouchedFiles = candidate.Contributions.Where(q=>_fileIds.Any(f => f == q.FileId)).Select(q => q.FileId).Distinct().Count();
+                candidate.Meta.TotalTouchedFiles = candidate.Contributions.Where(q => _fileIds.Any(f => f == q.FileId)).Select(q => q.FileId).Distinct().Count();
                 candidate.Meta.TotalNewFiles = pullRequestFiles.Count() - candidate.Meta.TotalTouchedFiles;
                 candidate.Meta.TotalActiveMonths = await GetTotalActiveMonth(candidate, _dbContext);
-                candidate.Meta.StayRatio = await GetCandidateProbabilityOfStay(candidate, _dbContext); // needs TotalActiveMonth
+                candidate.Meta.StayRatio = GetCandidateProbabilityOfStay(candidate); // needs TotalActiveMonth
                 candidate.Meta.EffortRatio = ComputeEffortRatio(totalEffort.TotalReviews, totalEffort.TotalCommits, candidate);
                 candidate.Meta.ProbabilityOfStay = Math.Pow(candidate.Meta.StayRatio * candidate.Meta.EffortRatio, 1);
                 candidate.Meta.TotalNewFiles = pullRequestFiles.Count() - candidate.Meta.TotalTouchedFiles;
@@ -59,8 +84,6 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
                     candidate.Score = candidate.Meta.ProbabilityOfStay * candidate.Meta.SpreadingRatio;
                 }
             }
-
-            SortCandidates();
         }
 
         private void SortCandidates()
@@ -85,43 +108,63 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return ((2 * candidate.Meta.GlobalTotalReviews) + candidate.Meta.GlobalTotalCommits) / (double)((2 * TotalReviews) + TotalCommits);
         }
 
-        private async Task Init(long subscriptionId, Octokit.PullRequest pullRequest,IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        private void FindCandidates(long subscriptionId, Octokit.PullRequest pullRequest,File[] files)
         {
-            _dicCandidates = new Dictionary<string, PersistBasedSpreadingCandidate>();
-
-            foreach (var pullRequestFile in pullRequestFiles)
+            foreach (var file in files)
             {
-                var file = await GetFile(subscriptionId, pullRequestFile);
                 var contributions = file?.Contributions;
-
-                if (file == null)
-                {
-                    contributions = await GetFolderLevelContributions(pullRequestFile);
-                }
-                else
-                {
-                    _fileIds.Add(file.Id);
-                }
-
-                foreach (var contribution in contributions)
-                {
-                    if (contribution.Contributor.GitHubLogin == null)
-                        continue;
-
-                    if (!_dicCandidates.ContainsKey(contribution.Contributor.GitHubLogin))
-                    {
-                        _dicCandidates[contribution.Contributor.GitHubLogin] = new PersistBasedSpreadingCandidate()
-                        {
-                            Contributor = contribution.Contributor
-                        };
-                    }
-
-                    _dicCandidates[contribution.Contributor.GitHubLogin].Contributions.Add(contribution);
-                }
+                AddContributions(contributions);
             }
         }
 
-        private async Task<List<Contribution>> GetFolderLevelContributions(Octokit.PullRequestFile pullRequestFile)
+        private async Task FindFolderLevelCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        {
+            foreach (var pullRequestFile in pullRequestFiles)
+            {
+                var contributions = await GetFolderLevelContributions(subscriptionId, pullRequestFile);
+                AddContributions(contributions);
+                await ScoreCandidates(subscriptionId, pullRequestFiles);
+            }
+
+        }
+
+        private void AddContributions(List<Contribution> contributions)
+        {
+            if (contributions == null)
+                return;
+
+            foreach (var contribution in contributions)
+            {
+                if (contribution.Contributor.GitHubLogin == null)
+                    continue;
+
+                if (!_dicCandidates.ContainsKey(contribution.Contributor.GitHubLogin))
+                {
+                    _dicCandidates[contribution.Contributor.GitHubLogin] = new PersistBasedSpreadingCandidate()
+                    {
+                        Contributor = contribution.Contributor
+                    };
+                }
+
+                _dicCandidates[contribution.Contributor.GitHubLogin].Contributions.Add(contribution);
+            }
+        }
+
+        private async Task<File[]> GetFiles(long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        {
+            var files = new List<File>(pullRequestFiles.Count);
+
+            foreach (var pullRequestFile in pullRequestFiles)
+            {
+                files.Add(await GetFile(subscriptionId, pullRequestFile));
+            }
+
+            _fileIds = files.Where(q => q != null).Select(q => q.Id).ToList();
+
+            return files.ToArray();
+        }
+
+        private async Task<List<Contribution>> GetFolderLevelContributions(long subscriptionId,Octokit.PullRequestFile pullRequestFile)
         {
             var parts = pullRequestFile.FileName.Split('/');
             var length = parts.Length - 1;
@@ -141,10 +184,11 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
 
                 // need to tune it. this really sucks performance-wise
                 var contributions = await _dbContext.FileHistories.Where(q => q.FileHistoryType != FileHistoryType.Deleted
-                && EF.Functions.Like(q.Path, path)).SelectMany(q=>q.File.Contributions)
+                && EF.Functions.Like(q.Path, path) && q.SubscriptionId== subscriptionId).SelectMany(q=>q.File.Contributions)
                 .Include(q=>q.Contributor)
                 .ToListAsync();
 
+                // there are duplications in the contributions
                 foreach (var contribution in contributions)
                 {
                     if (hashSet.Contains(contribution.Id))
@@ -184,7 +228,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
                 .CountAsync();
         }
 
-        private async Task<double> GetCandidateProbabilityOfStay(PersistBasedSpreadingCandidate candidate, SofiaDbContext dbContext)
+        private double GetCandidateProbabilityOfStay(PersistBasedSpreadingCandidate candidate)
         {
             return candidate.Meta.TotalActiveMonths / 12.0;
         }

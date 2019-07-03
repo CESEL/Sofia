@@ -15,11 +15,11 @@ namespace Sofia.Recommending
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Candidate>> Recommend(long subscriptionId ,PullRequest pullRequest,IReadOnlyList<PullRequestFile> pullRequestFiles)
+        public async Task<IEnumerable<Candidate>> Recommend(long subscriptionId ,PullRequest pullRequest,IReadOnlyList<PullRequestFile> pullRequestFiles, int topCandidatesLength)
         {
             var recommender = new PersistBasedSpreadingRecommender(_dbContext);
             await recommender.ScoreCandidates(subscriptionId, pullRequest, pullRequestFiles);
-            return recommender.GetCandidates(10);
+            return recommender.GetCandidates(topCandidatesLength);
         }
     }    
 }

@@ -11,9 +11,11 @@ Sofia is a reviewer recommender that promotes knowledge transferring through cod
 
 ## Experts vs Learners
 
-**Experts** are always necessary to review a pull request to keep the quality of code. Our work suggests that teams can reap the benefits of code review like never before by using it to increase team awareness and spread knowledge. According to our findings, assigning a **Learner** in addition to experts can be extremely effective in reducing the risk of turnover. Learners are not experts but have enough expertise to review the code and give valuable feedback. Assigning learners to a pull request, give a learning opportunity to reviewers.
+**Experts** are always necessary to review a pull request to keep the quality of code but according to our findings, assigning a **Learner** in addition to experts can be extremely effective in reducing the risk of turnover. Our work suggests that teams can reap the benefits of code review like never before by using it to increase team awareness and spread knowledge. 
 
-Sofia is not an expert recommender. Sofia helps teams to spread knowledge by best learners.  To retain the knowledge in the team, our heuristic suggests learners who are less likely to leave the project.
+Learners are not experts but have enough expertise to review the code and give valuable feedback. Assigning learners to a pull request, give a learning opportunity to reviewers.
+
+Sofia is not an expert recommender. Sofia recommends the best learners.
 
 #  🔌 [Installation](https://github.com/apps/sofiarec)
 

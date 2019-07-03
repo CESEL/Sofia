@@ -82,6 +82,7 @@ namespace Sofia
                     DisableGlobalLocks = true
                 }));
 
+            services.AddScoped<IssuesEventHandler>();
             services.AddScoped<IssueCommentEventHandler>();
             services.AddScoped<PullRequestEventHandler>();
             services.AddScoped<PushEventHandler>();
@@ -89,6 +90,7 @@ namespace Sofia
 
             services.AddGitHubWebHookHandler(registry=>  registry
                 .RegisterHandler<IssueCommentEventHandler>("issue_comment")
+                .RegisterHandler<IssuesEventHandler>("issues")
                 .RegisterHandler<PullRequestEventHandler>("pull_request")
                 .RegisterHandler<PushEventHandler>("push"));
 

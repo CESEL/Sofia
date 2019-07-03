@@ -9,7 +9,7 @@ using Sofia.Data.Models;
 
 namespace Sofia.WebHooksHandling.Commands
 {
-    public class ScanCommand : ICommandHandler
+    public class ScanIssueCommand : ICommandHandler
     {
         public async Task Execute(string action, string[] parts, string authorAssociation, EventContext eventContext, SofiaDbContext dbContext)
         {
@@ -51,7 +51,7 @@ namespace Sofia.WebHooksHandling.Commands
             if (parts[2] != "branch")
                 return false;
 
-            if (action != "created")
+            if (action != "opened")
                 return false;
 
             if (authorAssociation != "OWNER" && authorAssociation != "MEMBER" && authorAssociation != "COLLABORATOR")

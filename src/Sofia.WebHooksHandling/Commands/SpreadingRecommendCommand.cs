@@ -19,19 +19,22 @@ namespace Sofia.WebHooksHandling.Commands
 
         public bool IsMatch(string action, string[] parts, string authorAssociation, EventContext eventContext)
         {
-            if (parts.Length != 2)
+            if (parts.Length != 3)
                 return false;
 
             if (action != "created")
                 return false;
 
+            if (authorAssociation != "OWNER" && authorAssociation != "MEMBER" && authorAssociation != "COLLABORATOR")
+                return false;
+
             if (parts[0] != "@SofiaRec")
                 return false;
 
-            if (authorAssociation != "OWNER")
+            if (parts[1] != "suggest")
                 return false;
 
-            if (parts[1] != "suggest")
+            if (parts[2] != "learners")
                 return false;
 
             return true;
@@ -48,13 +51,13 @@ namespace Sofia.WebHooksHandling.Commands
             {
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
-                    .Create(repositoryId, issueNumber, 
+                    .Create(repositoryId, issueNumber,
                     "You have not registered the repository. First, you need to ask SofiaRec to scan it before asking for suggestions.");
                 return;
             }
-                
 
-            if(subscription.ScanningStatus!=SubscriptionStatus.Completed)
+
+            if (subscription.ScanningStatus != SubscriptionStatus.Completed)
             {
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
@@ -63,15 +66,30 @@ namespace Sofia.WebHooksHandling.Commands
                 return;
             }
 
+            try
+            {
+                await GetCandidates(eventContext, dbContext, issueNumber, repositoryId, subscription);
+            }
+            catch (NotFoundException e)
+            {
+                await eventContext.InstallationContext.Client.Issue.Comment
+                    .Create(repositoryId, issueNumber,
+                    "It's not a pull request. Sofia suggests reviewers for pull requests.");
+            }
+
+        }
+
+        private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription)
+        {
             var installationClient = eventContext.InstallationContext.Client;
             var recommender = new CodeReviewerRecommender(dbContext);
-            
+
             var pullRequest = await installationClient.PullRequest.Get(repositoryId, issueNumber);
             var pullRequestFiles = await installationClient.PullRequest.Files(repositoryId, issueNumber);
 
             var candidates = await recommender.Recommend(subscription.Id, pullRequest, pullRequestFiles);
 
-            await SaveCandidates(dbContext,candidates,pullRequest, subscription);
+            await SaveCandidates(dbContext, candidates, pullRequest, subscription);
 
             var message = GenerateMessage(candidates);
 

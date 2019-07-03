@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle" Version="1.8.5" />
+    <PackageReference Include="JWT" Version="5.1.1" />
+    <PackageReference Include="Octokit" Version="0.32.0" />
+    <PackageReference Include="Octokit.Bot" Version="0.9.3" />
+    <PackageReference Include="Octokit.Extensions" Version="1.0.7" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sofia.Data\Sofia.Data.csproj" />
+    <ProjectReference Include="..\Sofia.InformationGathering\Sofia.InformationGathering.csproj" />
+    <ProjectReference Include="..\Sofia.Recommending\Sofia.Recommending.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

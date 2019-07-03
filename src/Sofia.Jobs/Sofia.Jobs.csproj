@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sofia.Data\Sofia.Data.csproj" />
+    <ProjectReference Include="..\Sofia.InformationGathering\Sofia.InformationGathering.csproj" />
+    <ProjectReference Include="..\Sofia.WebHooksHandling\Sofia.WebHooksHandling.csproj" />
+  </ItemGroup>
+
+</Project>

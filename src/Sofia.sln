@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia", "Sofia\Sofia.csproj", "{1FF8927B-2F6D-4C66-8AD7-BC0061324647}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia.Data", "Sofia.Data\Sofia.Data.csproj", "{13D3E955-6E16-43FF-93DC-925B73E49A7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia.Recommending", "Sofia.Recommending\Sofia.Recommending.csproj", "{BC516318-5838-4A41-9620-E92F956FF54E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia.WebHooksHandling", "Sofia.WebHooksHandling\Sofia.WebHooksHandling.csproj", "{EF609F2B-8C0A-4174-B045-31040F3D4D47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia.InformationGathering", "Sofia.InformationGathering\Sofia.InformationGathering.csproj", "{8F053C5C-D671-4870-9640-EAA7962BC9A5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sofia.Jobs", "Sofia.Jobs\Sofia.Jobs.csproj", "{E7E8F4D1-2036-4810-A4C0-471C89997112}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FF8927B-2F6D-4C66-8AD7-BC0061324647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF8927B-2F6D-4C66-8AD7-BC0061324647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF8927B-2F6D-4C66-8AD7-BC0061324647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF8927B-2F6D-4C66-8AD7-BC0061324647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13D3E955-6E16-43FF-93DC-925B73E49A7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13D3E955-6E16-43FF-93DC-925B73E49A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13D3E955-6E16-43FF-93DC-925B73E49A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13D3E955-6E16-43FF-93DC-925B73E49A7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC516318-5838-4A41-9620-E92F956FF54E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC516318-5838-4A41-9620-E92F956FF54E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC516318-5838-4A41-9620-E92F956FF54E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC516318-5838-4A41-9620-E92F956FF54E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF609F2B-8C0A-4174-B045-31040F3D4D47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF609F2B-8C0A-4174-B045-31040F3D4D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF609F2B-8C0A-4174-B045-31040F3D4D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF609F2B-8C0A-4174-B045-31040F3D4D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F053C5C-D671-4870-9640-EAA7962BC9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F053C5C-D671-4870-9640-EAA7962BC9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F053C5C-D671-4870-9640-EAA7962BC9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F053C5C-D671-4870-9640-EAA7962BC9A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7E8F4D1-2036-4810-A4C0-471C89997112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7E8F4D1-2036-4810-A4C0-471C89997112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7E8F4D1-2036-4810-A4C0-471C89997112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7E8F4D1-2036-4810-A4C0-471C89997112}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F3D18FD4-BEFA-46FE-A567-BBEC66C60241}
+	EndGlobalSection
+EndGlobal

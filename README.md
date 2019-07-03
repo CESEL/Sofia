@@ -11,11 +11,11 @@ Sofia, is a reviewer recommender that promote knowledge transferring through cod
 
 Experts are always necessary to review a pull request to keep the quality of code. Our work suggests that teams can reap the benefits of code review like never before by using it to increase team awareness and spread knowledge. According to our findings, assigning a learner in addition to experts can be extremely effective in reducing the risk of turnover. 
 
-# [Installation](https://github.com/apps/sofiarec)
+#  🔌 [Installation](https://github.com/apps/sofiarec)
 
 Sofia is a GitHub application. First you need to [install](https://github.com/apps/sofiarec) it on your repository or organizational account.
 
-## Scanning
+# 📡 Scanning
 
 After installing sofia, you need to ask Sofia to scan your repository. During scanning:
 
@@ -37,7 +37,7 @@ You need to open an Issue and make a comment on it like below. Instead of **mast
 
 A full scan usually takes around 2-3 hours for large repositories. Upon completion, Sofia lets you know by leaving a comment.
 
-# Get Suggestions
+# 📣 Get Suggestions
 
 You can ask for suggestions, once the scanning is complete. Simply, ask for Sofia's recommendation by making the following comment on your pull request.
 

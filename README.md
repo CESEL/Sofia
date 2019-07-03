@@ -42,3 +42,5 @@ You can ask for suggestions, once the scanning is complete. Simply, ask for Sofi
 ```
 @SofiaRec suggest learners
 ```
+
+![Image description](https://github.com/mirsaeedi/Sofia/tree/master/src/Sofia/wwwroot/img/scan.png)

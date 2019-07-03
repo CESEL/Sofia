@@ -33,6 +33,8 @@ You need to open an Issue and make a comment on it like below. Instead of **mast
 @SofiaRec scan branch master
 ```
 
+![Image description](https://raw.githubusercontent.com/mirsaeedi/Sofia/master/src/Sofia/wwwroot/img/scan.PNG)
+
 A full scan usually takes around 2-3 hours for large repositories. Upon completion, Sofia lets you know by leaving a comment.
 
 # Get Suggestions
@@ -43,4 +45,6 @@ You can ask for suggestions, once the scanning is complete. Simply, ask for Sofi
 @SofiaRec suggest learners
 ```
 
-![Image description](https://github.com/mirsaeedi/Sofia/tree/master/src/Sofia/wwwroot/img/scan.png)
+![Image description](https://raw.githubusercontent.com/mirsaeedi/Sofia/master/src/Sofia/wwwroot/img/suggestions.PNG)
+
+

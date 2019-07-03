@@ -15,7 +15,7 @@ Experts are always necessary to review a pull request to keep the quality of cod
 
 Sofia is a GitHub application. First you need to [install](https://github.com/apps/sofiarec) it on your repository or organizational account.
 
-##Scanning
+## Scanning
 
 After installing sofia, you need to ask Sofia to scan your repository. During scanning:
 
@@ -24,6 +24,16 @@ After installing sofia, you need to ask Sofia to scan your repository. During sc
  3. Using commits and reviewers, Sofia builds the knowledge model of your project.
  
 After scanning the project, Sofia keeps the model up to date using GitHub WebHooks to analyze events in real time.
+
+### Ask for Scanning
+
+You need to open an Issue and make a comment on it like below. Instead of **master**, specify your main branch.
+
+```
+@SofiaRec scan branch master
+```
+
+A full scan usually takes around 2-3 hours for large repositories. Upon completion, Sofia lets you know by leaving a comment.
 
 # Get Suggestions
 

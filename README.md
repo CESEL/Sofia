@@ -1,6 +1,8 @@
 # Sofia
 Sofia is a reviewer recommender. It helps you with selecting the best code reviewers to maximize **_knowledge  spreading_** and **_knowledge retention_**. 
 
+---
+
 Assigning experts to pull requests ensures high code quality and helps with catching bugs before escaping to production. Studies have shown that finding an expert to review a change is trivial in most of the times because code has strong ownership.
 
 There are other overlooked benefits that pull requests offer to teams such as spreading and distributing knowledge across team members. As a team starts knowledge transferring through pull requests, the knowledge concentration decreases which means more developers become aware of different parts of the code. Having backup developers who have enough knowledge about code's internal design and structure make the project resilient to turnover which is a risk inherent in software projects.

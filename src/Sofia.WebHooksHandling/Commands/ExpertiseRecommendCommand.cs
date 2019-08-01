@@ -10,11 +10,11 @@ using Octokit.Bot;
 using Sofia.Data.Contexts;
 using Sofia.Data.Models;
 using Sofia.Recommending;
+using Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
 using Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
-
 namespace Sofia.WebHooksHandling.Commands
 {
-    public class SpreadingRecommendCommand : ICommandHandler
+    public class ExpertiseRecommendCommandRecommendCommand : ICommandHandler
     {
 
         public bool IsMatch(string action, string[] parts, string authorAssociation, EventContext eventContext)
@@ -34,7 +34,7 @@ namespace Sofia.WebHooksHandling.Commands
             if (!string.Equals(parts[1], "suggest", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (!string.Equals(parts[2], "learners", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(parts[2], "experts", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (parts.Length == 5)
@@ -72,7 +72,6 @@ namespace Sofia.WebHooksHandling.Commands
                 return;
             }
 
-
             if (subscription.ScanningStatus != SubscriptionStatus.Completed)
             {
 
@@ -98,7 +97,7 @@ namespace Sofia.WebHooksHandling.Commands
         private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
         {
             var installationClient = eventContext.InstallationContext.Client;
-            var recommender = new CodeReviewerRecommender(RecommenderType.KnowledgeRec,dbContext);
+            var recommender = new CodeReviewerRecommender(RecommenderType.Chrev,dbContext);
 
             var pullRequest = await installationClient.PullRequest.Get(repositoryId, issueNumber);
             var pullRequestFiles = await installationClient.PullRequest.Files(repositoryId, issueNumber);
@@ -121,7 +120,7 @@ namespace Sofia.WebHooksHandling.Commands
                 GitHubLogin = q.Contributor.GitHubLogin,
                 PullRequestNumber = pullRequest.Number,
                 Rank = q.Rank,
-                RecommenderType = RecommenderType.KnowledgeRec,
+                RecommenderType = RecommenderType.Chrev,
                 SubscriptionId = subscription.Id,
                 SuggestionDateTime = dateTime
             }));
@@ -142,14 +141,14 @@ namespace Sofia.WebHooksHandling.Commands
 
             if (candidates.Count() > 0)
             {
-                message += "Sofia has found following **_Potential Learners_**." + Environment.NewLine + Environment.NewLine;
+                message += "Sofia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
 
-                message += "| Rank | Name | Ownership | Learning | Active Months |" + Environment.NewLine; ;
-                message += "| - | - | - | - | - |" + Environment.NewLine;
+                message += "| Rank | Name | Commit Ownership | Review Ownership | Learning | Active Months |" + Environment.NewLine; ;
+                message += "| - | - | - | - | - | - |" + Environment.NewLine;
 
-                foreach (var candidate in candidates.Cast<PersistBasedSpreadingCandidate>())
+                foreach (var candidate in candidates.Cast<ChrevCandidate>())
                 {
-                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
+                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalReviewedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
                 }
             }
 

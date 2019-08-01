@@ -42,13 +42,13 @@ namespace Sofia.WebHooksHandling.Commands
             if (parts.Length != 4)
                 return false;
 
-            if (parts[0] != "@SofiaRec")
+            if (string.Equals(parts[0], "@sophia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (parts[1] != "scan")
+            if (string.Equals(parts[1], "scan", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (parts[2] != "branch")
+            if (string.Equals(parts[2], "branch", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (action != "created")

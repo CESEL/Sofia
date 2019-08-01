@@ -27,5 +27,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
         public double StayRatio { get; set; }
 
         public double SpreadingRatio { get; internal set; }
+        public int TotalModifiedFiles { get; internal set; }
+        public int TotalReviewedFiles { get; internal set; }
     }
 }

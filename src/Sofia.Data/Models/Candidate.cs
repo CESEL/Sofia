@@ -25,6 +25,6 @@ namespace Sofia.Data.Models
 
     public enum RecommenderType
     {
-        Expert,Spreading
+        Chrev,KnowledgeRec,KnowledgeRecChRev
     }
 }

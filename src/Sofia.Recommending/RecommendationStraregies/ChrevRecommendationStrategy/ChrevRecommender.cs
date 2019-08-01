@@ -8,16 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy
+namespace Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy
 {
-    public class PersistBasedSpreadingRecommender : Recommender
+    public class ChrevRecommender : Recommender
     {
         private SofiaDbContext _dbContext;
-        private Dictionary<string, PersistBasedSpreadingCandidate> _dicCandidates = new Dictionary<string, PersistBasedSpreadingCandidate>();
-        private PersistBasedSpreadingCandidate[] _candidates;
-        private List<long> _fileIds = new List<long>();
+        private Dictionary<string, ChrevCandidate> _dicCandidates = new Dictionary<string, ChrevCandidate>();
+        private ChrevCandidate[] _candidates;
+        private Dictionary<string,long> _fileIds = new Dictionary<string, long>();
+        private Dictionary<string, List<Contribution>> _dicFiles = new Dictionary<string, List<Contribution>>();
 
-        public PersistBasedSpreadingRecommender(SofiaDbContext dbContext)
+        public ChrevRecommender(SofiaDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -32,58 +33,71 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             }
         }
 
-
-
-        private async Task GetCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
-        {
-            var files = await GetFiles(subscriptionId, pullRequestFiles);
-            FindCandidates(subscriptionId, pullRequest, files);
-            await ScoreCandidates(subscriptionId, pullRequestFiles);
-        }
-
         private bool AllCandidatesHaveZeroScore()
         {
-            return _dicCandidates.Count == 0 && _dicCandidates.All(q=>q.Value.Score==0);
+            return _dicCandidates.Count == 0 && _dicCandidates.All(q => q.Value.Score == 0);
+        }
+
+        private async Task FindFolderLevelCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        {
+            foreach (var pullRequestFile in pullRequestFiles)
+            {
+                var contributions = await GetFolderLevelContributions(subscriptionId, pullRequestFile);
+                AddContributions(contributions);
+                await ScoreCandidates(subscriptionId, pullRequestFiles);
+            }
+
         }
 
         private async Task ScoreCandidates(long subscriptionId,IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
-            await CalculateCandidatesScores(subscriptionId, pullRequestFiles);
 
+            await CalculateCandidatesScores(subscriptionId, pullRequestFiles);
             SortCandidates();
         }
 
         private async Task CalculateCandidatesScores(long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
-            var totalEffort = await GetTotalEffort(subscriptionId, _dbContext);
+            foreach (var kvCandidate in _dicCandidates)
+            {
+                foreach (var pullRequestFile in pullRequestFiles)
+                {
+                    var fileId = _fileIds[pullRequestFile.FileName];
+                    var totalContribution = _dicFiles[pullRequestFile.FileName];
+                    var candidateContribution = kvCandidate.Value.Contributions.Where(q => q.FileId == fileId);
+
+                    if (candidateContribution.Count() == 0)
+                        continue;
+
+                    var totalWorkDays = totalContribution.Select(q => q.DateTime.Value.DateTime).Distinct().Count();
+                    var candidateWorkDays = kvCandidate.Value.Contributions.Where(q => q.FileId == fileId).Select(q => q.DateTime.Value.DateTime).Distinct().Count();
+
+                    var lastWorkDay = totalContribution.Max(q => q.DateTime.Value.DateTime);
+                    var candidateLastWorkDays = kvCandidate.Value.Contributions.Where(q => q.FileId == fileId).Max(q => q.DateTime.Value.DateTime);
+
+                    var score = (candidateContribution.Count() / (double)totalContribution.Count())
+                        + (candidateWorkDays / (double)totalWorkDays)
+                        + (1 / ((lastWorkDay - candidateLastWorkDays).TotalDays) + 1);
+
+                    kvCandidate.Value.Score += score;
+
+                }
+            }
+
+            var totalEffort = await GetTotalEffort(subscriptionId);
 
             foreach (var candidate in _dicCandidates.Values)
             {
-                var candidateEffort = await GetCandidateEffort(candidate, _dbContext);
+                var candidateEffort = await GetCandidateEffort(candidate);
                 candidate.Meta.GlobalTotalCommits = candidateEffort.TotalCommts;
                 candidate.Meta.GlobalTotalReviews = candidateEffort.TotalReviews;
-                candidate.Meta.LocalTotalCommits = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f => f == q.FileId));
-                candidate.Meta.LocalTotalReviews = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Review && _fileIds.Any(f => f == q.FileId));
-                candidate.Meta.TotalTouchedFiles = candidate.Contributions.Where(q => _fileIds.Any(f => f == q.FileId)).Select(q => q.FileId).Distinct().Count();
-                candidate.Meta.TotalModifiedFiles = candidate.Contributions.Where(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f => f == q.FileId)).Select(q => q.FileId).Distinct().Count();
-                candidate.Meta.TotalReviewedFiles = candidate.Contributions.Where(q => q.ContributionType == ContributionType.Review && _fileIds.Any(f => f == q.FileId)).Select(q => q.FileId).Distinct().Count();
+                candidate.Meta.LocalTotalCommits = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f => f.Value == q.FileId));
+                candidate.Meta.LocalTotalReviews = candidate.Contributions.Count(q => q.ContributionType == ContributionType.Review && _fileIds.Any(f => f.Value == q.FileId));
+                candidate.Meta.TotalTouchedFiles = candidate.Contributions.Where(q => _fileIds.Any(f => f.Value == q.FileId)).Select(q => q.FileId).Distinct().Count();
                 candidate.Meta.TotalNewFiles = pullRequestFiles.Count() - candidate.Meta.TotalTouchedFiles;
-                candidate.Meta.TotalActiveMonths = await GetTotalActiveMonth(candidate, _dbContext);
-                candidate.Meta.StayRatio = GetCandidateProbabilityOfStay(candidate); // needs TotalActiveMonth
-                candidate.Meta.EffortRatio = ComputeEffortRatio(totalEffort.TotalReviews, totalEffort.TotalCommits, candidate);
-                candidate.Meta.ProbabilityOfStay = Math.Pow(candidate.Meta.StayRatio * candidate.Meta.EffortRatio, 1);
-                var specializedKnowledge = candidate.Meta.TotalTouchedFiles / (double)pullRequestFiles.Count;
-
-                candidate.Meta.SpreadingRatio = 1 - specializedKnowledge;
-
-                if (specializedKnowledge > 1) // if it's a folder level dev
-                {
-                    candidate.Score = candidate.Meta.ProbabilityOfStay;
-                }
-                else
-                {
-                    candidate.Score = candidate.Meta.ProbabilityOfStay * candidate.Meta.SpreadingRatio;
-                }
+                candidate.Meta.TotalModifiedFiles = candidate.Contributions.Where(q => q.ContributionType == ContributionType.Commit && _fileIds.Any(f => f.Value == q.FileId)).Select(q => q.FileId).Distinct().Count();
+                candidate.Meta.TotalReviewedFiles = candidate.Contributions.Where(q => q.ContributionType == ContributionType.Review && _fileIds.Any(f => f.Value == q.FileId)).Select(q => q.FileId).Distinct().Count();
+                candidate.Meta.TotalActiveMonths = await GetTotalActiveMonth(candidate);
             }
         }
 
@@ -104,29 +118,20 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return _candidates.Take(count);
         }
 
-        private static double ComputeEffortRatio(int TotalReviews, int TotalCommits, PersistBasedSpreadingCandidate candidate)
+        private async Task GetCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
-            return ((2 * candidate.Meta.GlobalTotalReviews) + candidate.Meta.GlobalTotalCommits) / (double)((2 * TotalReviews) + TotalCommits);
+            var files = await GetFiles(subscriptionId, pullRequestFiles);
+            FindCandidates(subscriptionId, pullRequest, files);
+            await ScoreCandidates(subscriptionId, pullRequestFiles);
         }
 
-        private void FindCandidates(long subscriptionId, Octokit.PullRequest pullRequest,File[] files)
+        private void FindCandidates(long subscriptionId, Octokit.PullRequest pullRequest, File[] files)
         {
             foreach (var file in files)
             {
                 var contributions = file?.Contributions;
                 AddContributions(contributions);
             }
-        }
-
-        private async Task FindFolderLevelCandidates(long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
-        {
-            foreach (var pullRequestFile in pullRequestFiles)
-            {
-                var contributions = await GetFolderLevelContributions(subscriptionId, pullRequestFile);
-                AddContributions(contributions);
-                await ScoreCandidates(subscriptionId, pullRequestFiles);
-            }
-
         }
 
         private void AddContributions(List<Contribution> contributions)
@@ -141,7 +146,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
 
                 if (!_dicCandidates.ContainsKey(contribution.Contributor.GitHubLogin))
                 {
-                    _dicCandidates[contribution.Contributor.GitHubLogin] = new PersistBasedSpreadingCandidate()
+                    _dicCandidates[contribution.Contributor.GitHubLogin] = new ChrevCandidate()
                     {
                         Contributor = contribution.Contributor
                     };
@@ -151,21 +156,27 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             }
         }
 
+
         private async Task<File[]> GetFiles(long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
             var files = new List<File>(pullRequestFiles.Count);
 
             foreach (var pullRequestFile in pullRequestFiles)
             {
-                files.Add(await GetFile(subscriptionId, pullRequestFile));
-            }
+                var file = await GetFile(subscriptionId, pullRequestFile);
 
-            _fileIds = files.Where(q => q != null).Select(q => q.Id).ToList();
+                if (file != null)
+                {
+                    files.Add(file);
+                    _fileIds[pullRequestFile.FileName] = file.Id;
+                    _dicFiles[pullRequestFile.FileName] = file.Contributions;
+                }   
+            }
 
             return files.ToArray();
         }
 
-        private async Task<List<Contribution>> GetFolderLevelContributions(long subscriptionId,Octokit.PullRequestFile pullRequestFile)
+        private async Task<List<Contribution>> GetFolderLevelContributions(long subscriptionId, Octokit.PullRequestFile pullRequestFile)
         {
             var parts = pullRequestFile.FileName.Split('/');
             var length = parts.Length - 1;
@@ -178,15 +189,15 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
 
                 for (int i = 0; i < length; i++)
                 {
-                    path +=parts[i]+"/";
+                    path += parts[i] + "/";
                 }
 
                 path += "%";
 
                 // need to tune it. this really sucks performance-wise
                 var contributions = await _dbContext.FileHistories.Where(q => q.FileHistoryType != FileHistoryType.Deleted
-                && EF.Functions.Like(q.Path, path) && q.SubscriptionId== subscriptionId).SelectMany(q=>q.File.Contributions)
-                .Include(q=>q.Contributor)
+                && EF.Functions.Like(q.Path, path) && q.SubscriptionId == subscriptionId).SelectMany(q => q.File.Contributions)
+                .Include(q => q.Contributor)
                 .ToListAsync();
 
                 // there are duplications in the contributions
@@ -218,7 +229,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return fileHistory?.File;
         }
 
-        private async Task<int> GetTotalActiveMonth(Candidate candidate, SofiaDbContext dbContext)
+        private async Task<int> GetTotalActiveMonth(Candidate candidate)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 
@@ -229,12 +240,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
                 .CountAsync();
         }
 
-        private double GetCandidateProbabilityOfStay(PersistBasedSpreadingCandidate candidate)
-        {
-            return candidate.Meta.TotalActiveMonths / 12.0;
-        }
-
-        private async Task<(int TotalReviews, int TotalCommits)> GetTotalEffort(long subscriptionId, SofiaDbContext dbContext)
+        private async Task<(int TotalReviews, int TotalCommits)> GetTotalEffort(long subscriptionId)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 
@@ -255,7 +261,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return (totalReviews, totalCommits);
         }
 
-        private async Task<(int TotalReviews, int TotalCommts)> GetCandidateEffort(Candidate candidate, SofiaDbContext dbContext)
+        private async Task<(int TotalReviews, int TotalCommts)> GetCandidateEffort(Candidate candidate)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 

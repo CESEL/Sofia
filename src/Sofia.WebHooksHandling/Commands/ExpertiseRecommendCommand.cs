@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.Recommending;
-using Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
-using Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
-namespace Sofia.WebHooksHandling.Commands
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.Recommending;
+using Sophia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
+using Sophia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
+namespace Sophia.WebHooksHandling.Commands
 {
     public class ExpertiseRecommendCommandRecommendCommand : ICommandHandler
     {
@@ -28,7 +28,7 @@ namespace Sofia.WebHooksHandling.Commands
             if (authorAssociation != "OWNER" && authorAssociation != "MEMBER" && authorAssociation != "COLLABORATOR")
                 return false;
 
-            if (!string.Equals(parts[0], "@sophia", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(parts[0], "sophia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (!string.Equals(parts[1], "suggest", StringComparison.OrdinalIgnoreCase))
@@ -49,7 +49,7 @@ namespace Sofia.WebHooksHandling.Commands
             return true;
         }
 
-        public async Task Execute(string action,string[] parts, string authorAssociation, EventContext eventContext, SofiaDbContext dbContext)
+        public async Task Execute(string action,string[] parts, string authorAssociation, EventContext eventContext, SophiaDbContext dbContext)
         {
 
             var issueNumber = (int)eventContext.WebHookEvent.GetPayload().issue.number;
@@ -68,7 +68,7 @@ namespace Sofia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "You have not registered the repository. First, you need to ask SofiaRec to scan it before asking for suggestions.");
+                    "You have not registered the repository. First, you need to ask Sophia to scan it before asking for suggestions.");
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace Sofia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "SofiaRec has not yet finished scanning the repository. You can ask for suggestion once it is done.");
+                    "Sophia has not yet finished scanning the repository. You can ask for suggestion once it is done.");
                 return;
             }
 
@@ -89,12 +89,12 @@ namespace Sofia.WebHooksHandling.Commands
             {
                 await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "It's not a pull request. Sofia suggests reviewers for pull requests.");
+                    "It's not a pull request. Sophia suggests reviewers for pull requests.");
             }
 
         }
 
-        private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
+        private async Task GetCandidates(EventContext eventContext, SophiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
         {
             var installationClient = eventContext.InstallationContext.Client;
             var recommender = new CodeReviewerRecommender(RecommenderType.Chrev,dbContext);
@@ -111,7 +111,7 @@ namespace Sofia.WebHooksHandling.Commands
             await installationClient.Issue.Comment.Create(repositoryId, issueNumber, message);
         }
 
-        private async Task SaveCandidates(SofiaDbContext dbContext, IEnumerable<Recommending.Candidate> candidates, Octokit.PullRequest pullRequest, Data.Models.Subscription subscription)
+        private async Task SaveCandidates(SophiaDbContext dbContext, IEnumerable<Recommending.Candidate> candidates, Octokit.PullRequest pullRequest, Data.Models.Subscription subscription)
         {
             var dateTime = DateTimeOffset.UtcNow;
 
@@ -133,17 +133,17 @@ namespace Sofia.WebHooksHandling.Commands
         {
             if (candidates.Count() == 0)
             {
-                return "Sorry! Sofia couldn't find any potential reviewer.";
+                return "Sorry! Sophia couldn't find any potential reviewer.";
             }
 
             var totalFiles = pullRequestFiles.Count();
-            var message = "Sofia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
+            var message = "Sophia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
 
             if (candidates.Count() > 0)
             {
-                message += "Sofia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
+                message += "Sophia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
 
-                message += "| Rank | Name | Commit Ownership | Review Ownership | Learning | Active Months |" + Environment.NewLine; ;
+                message += "| Rank | Name | Files Authored | Files Reviewed | New Files | Active Months |" + Environment.NewLine;
                 message += "| - | - | - | - | - | - |" + Environment.NewLine;
 
                 foreach (var candidate in candidates.Cast<ChrevCandidate>())

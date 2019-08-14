@@ -4,14 +4,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 
-namespace Sofia.WebHooksHandling.Commands
+namespace Sophia.WebHooksHandling.Commands
 {
     public class ScanIssueCommand : ICommandHandler
     {
-        public async Task Execute(string action, string[] parts, string authorAssociation, EventContext eventContext, SofiaDbContext dbContext)
+        public async Task Execute(string action, string[] parts, string authorAssociation, EventContext eventContext, SophiaDbContext dbContext)
         {
             var branch = parts[3];
             var issueNumber = (int)eventContext.WebHookEvent.GetPayload().issue.number;
@@ -23,16 +23,16 @@ namespace Sofia.WebHooksHandling.Commands
             if (await AlreadyScanned(dbContext,repositoryId))
             {
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
-                    .Create(repositoryId, issueNumber, "SofiaRec has already scanned this branch and is monitoring it.");
+                    .Create(repositoryId, issueNumber, "Sophia has already scanned this branch and is monitoring it.");
             }
             else
             {
-                var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment.Create(repositoryId, issueNumber, "SofiaRec just started to scan your repository. After Completion you can ask for suggestions for code reviewers!");
+                var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment.Create(repositoryId, issueNumber, "Sophia just started to scan your repository. After Completion you can ask for suggestions for code reviewers!");
                 await SaveSubscription(issueNumber, repositoryId, owenerName, repositoryName, repositoryUrl, branch, eventContext.WebHookEvent.GetInstallationId(), dbContext);
             }
         }
 
-        private async Task<bool> AlreadyScanned(SofiaDbContext dbContext, long repositoryId)
+        private async Task<bool> AlreadyScanned(SophiaDbContext dbContext, long repositoryId)
         {
             return await dbContext.Subscriptions.AnyAsync(q => q.RepositoryId == repositoryId);
         }
@@ -42,7 +42,7 @@ namespace Sofia.WebHooksHandling.Commands
             if (parts.Length != 4)
                 return false;
 
-            if (string.Equals(parts[0], "@sophia", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parts[0], "sophia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (string.Equals(parts[1], "scan", StringComparison.OrdinalIgnoreCase))
@@ -60,7 +60,7 @@ namespace Sofia.WebHooksHandling.Commands
             return true;
         }
 
-        private async Task SaveSubscription(int issueNumber, long repositoryId, string owner, string repository, string repositoryUrl, string branch, long? installationId,SofiaDbContext dbContext)
+        private async Task SaveSubscription(int issueNumber, long repositoryId, string owner, string repository, string repositoryUrl, string branch, long? installationId,SophiaDbContext dbContext)
         {
             var subscription = new Subscription()
             {

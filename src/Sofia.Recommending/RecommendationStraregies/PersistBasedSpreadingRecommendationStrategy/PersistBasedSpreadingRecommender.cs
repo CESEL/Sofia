@@ -1,23 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Octokit;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy
+namespace Sophia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy
 {
     public class PersistBasedSpreadingRecommender : Recommender
     {
-        private SofiaDbContext _dbContext;
+        private SophiaDbContext _dbContext;
         private Dictionary<string, PersistBasedSpreadingCandidate> _dicCandidates = new Dictionary<string, PersistBasedSpreadingCandidate>();
         private PersistBasedSpreadingCandidate[] _candidates;
         private List<long> _fileIds = new List<long>();
 
-        public PersistBasedSpreadingRecommender(SofiaDbContext dbContext)
+        public PersistBasedSpreadingRecommender(SophiaDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -218,7 +218,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return fileHistory?.File;
         }
 
-        private async Task<int> GetTotalActiveMonth(Candidate candidate, SofiaDbContext dbContext)
+        private async Task<int> GetTotalActiveMonth(Candidate candidate, SophiaDbContext dbContext)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 
@@ -234,7 +234,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return candidate.Meta.TotalActiveMonths / 12.0;
         }
 
-        private async Task<(int TotalReviews, int TotalCommits)> GetTotalEffort(long subscriptionId, SofiaDbContext dbContext)
+        private async Task<(int TotalReviews, int TotalCommits)> GetTotalEffort(long subscriptionId, SophiaDbContext dbContext)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 
@@ -255,7 +255,7 @@ namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecom
             return (totalReviews, totalCommits);
         }
 
-        private async Task<(int TotalReviews, int TotalCommts)> GetCandidateEffort(Candidate candidate, SofiaDbContext dbContext)
+        private async Task<(int TotalReviews, int TotalCommts)> GetCandidateEffort(Candidate candidate, SophiaDbContext dbContext)
         {
             var lastYear = DateTimeOffset.Now.AddYears(-1);
 

@@ -1,9 +1,9 @@
-﻿using Sofia.Data.Models;
+﻿using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sofia.Data
+namespace Sophia.Data
 {
     public static class Extensions
     {

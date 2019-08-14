@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.WebHooksHandling.Commands;
+using Sophia.Data.Contexts;
+using Sophia.WebHooksHandling.Commands;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sofia.WebHooksHandling
+namespace Sophia.WebHooksHandling
 {
     public class IssueCommentEventHandler:IHookHandler
     {
         private ILogger<IssueCommentEventHandler> _logger;
-        private SofiaDbContext _sofiaDbContext;
+        private SophiaDbContext _SophiaDbContext;
 
-        public IssueCommentEventHandler(SofiaDbContext sofiaDbContext,ILogger<IssueCommentEventHandler> logger)
+        public IssueCommentEventHandler(SophiaDbContext SophiaDbContext,ILogger<IssueCommentEventHandler> logger)
         {
             _logger = logger;
-            _sofiaDbContext = sofiaDbContext;
+            _SophiaDbContext = SophiaDbContext;
         }
 
         public async Task Handle(EventContext eventContext)
@@ -59,7 +59,7 @@ namespace Sofia.WebHooksHandling
             var authorAssociation = (string)eventContext.WebHookEvent.GetPayload().comment.author_association;
 
             var commandHandler = CommandHandlerFactory.GetHandler(action, parts, authorAssociation, eventContext);
-            await commandHandler.Execute(action, parts, authorAssociation, eventContext, _sofiaDbContext);
+            await commandHandler.Execute(action, parts, authorAssociation, eventContext, _SophiaDbContext);
         }
     }
 }

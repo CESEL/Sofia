@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs.ScaningSteps
+namespace Sophia.Jobs.ScaningSteps
 {
     public class PullRequestAnalyzingStep : Step
     {
@@ -18,7 +18,7 @@ namespace Sofia.Jobs.ScaningSteps
 
         public override SubscriptionStatus MidConditionStatus => SubscriptionStatus.PullRequestsAnalyzing;
 
-        public PullRequestAnalyzingStep(SofiaDbContext dbContext):base(dbContext)
+        public PullRequestAnalyzingStep(SophiaDbContext dbContext):base(dbContext)
         {
             
         }

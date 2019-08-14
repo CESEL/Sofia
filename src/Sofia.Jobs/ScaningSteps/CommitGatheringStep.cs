@@ -1,14 +1,14 @@
 ﻿using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs.ScaningSteps
+namespace Sophia.Jobs.ScaningSteps
 {
     public class CommitGatheringStep:Step
     {
@@ -20,7 +20,7 @@ namespace Sofia.Jobs.ScaningSteps
 
         public override SubscriptionStatus PostConditionStatus => SubscriptionStatus.CommitGatheringCompleted;
 
-        public CommitGatheringStep(SofiaDbContext dbContext,GitHubOption gitHubOption):base(dbContext)
+        public CommitGatheringStep(SophiaDbContext dbContext,GitHubOption gitHubOption):base(dbContext)
         {
             _gitHubOption = gitHubOption;
         }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering.GitHub;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering.GitHub;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class PullRequestAnalyzer
     {
@@ -17,14 +17,14 @@ namespace Sofia.InformationGathering
         private DateTimeOffset _latestCommitDateTime;
         private Subscription _subscription;
         private InstallationContext _installationClient;
-        private SofiaDbContext _dbContext;
+        private SophiaDbContext _dbContext;
         private GitHubOption _gitHubOption;
         private GitHubRepositoryPullRequestService _gitHubRepositoryPullRequestService;
         private Dictionary<string, Contributor> _contributors = new Dictionary<string, Contributor>();
         private PullRequest[] _pullRequests;
         private Dictionary<string, File> _files = new Dictionary<string, File>();
 
-        public PullRequestAnalyzer(SofiaDbContext dbContext, GitHubOption gitHubOption, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService)
+        public PullRequestAnalyzer(SophiaDbContext dbContext, GitHubOption gitHubOption, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService)
         {
             _dbContext = dbContext;
             _gitHubOption = gitHubOption;

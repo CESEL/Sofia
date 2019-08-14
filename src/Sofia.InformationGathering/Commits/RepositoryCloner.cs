@@ -1,14 +1,14 @@
 ﻿using Hangfire;
 using LibGit2Sharp;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class RepositoryCloner
     {

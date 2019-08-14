@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 
-namespace Sofia.Data.Migrations
+namespace Sophia.Data.Migrations
 {
-    [DbContext(typeof(SofiaDbContext))]
+    [DbContext(typeof(SophiaDbContext))]
     [Migration("20190427214930_Initial")]
     partial class Initial
     {
@@ -21,7 +21,7 @@ namespace Sofia.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Sofia.Data.Models.Subscription", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Subscription", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.SubscriptionEvent", b =>
+            modelBuilder.Entity("Sophia.Data.Models.SubscriptionEvent", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,9 +67,9 @@ namespace Sofia.Data.Migrations
                     b.ToTable("SubscriptionEvent");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.SubscriptionEvent", b =>
+            modelBuilder.Entity("Sophia.Data.Models.SubscriptionEvent", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany("SubscriptionEvents")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);

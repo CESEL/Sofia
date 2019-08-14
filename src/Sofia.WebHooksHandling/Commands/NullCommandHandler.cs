@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 
-namespace Sofia.WebHooksHandling.Commands
+namespace Sophia.WebHooksHandling.Commands
 {
     internal class NullCommandHandler : ICommandHandler
     {
-        public Task Execute(string action, string[] parts, string authorAssociation, EventContext eventContext, SofiaDbContext dbContext)
+        public Task Execute(string action, string[] parts, string authorAssociation, EventContext eventContext, SophiaDbContext dbContext)
         {
             return Task.CompletedTask;
         }

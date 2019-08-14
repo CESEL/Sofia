@@ -1,30 +1,30 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Octokit.Bot;
-using Sofia.Data;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering.GitHub;
+using Sophia.Data;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering.GitHub;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.WebHooksHandling
+namespace Sophia.WebHooksHandling
 {
     public class PullRequestEventHandler:IHookHandler
     {
         private GitHubRepositoryPullRequestService _gitHubRepositoryPullRequestService;
-        private SofiaDbContext _sofiaDbContext;
+        private SophiaDbContext _SophiaDbContext;
         private ILogger<PullRequestEventHandler> _logger;
 
-        public PullRequestEventHandler(SofiaDbContext sofiaDbContext,
+        public PullRequestEventHandler(SophiaDbContext SophiaDbContext,
             GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService,
             ILogger<PullRequestEventHandler> logger)
         {
             _gitHubRepositoryPullRequestService = gitHubRepositoryPullRequestService;
-            _sofiaDbContext = sofiaDbContext;
+            _SophiaDbContext = SophiaDbContext;
             _logger = logger;
         }
 
@@ -71,7 +71,7 @@ namespace Sofia.WebHooksHandling
             var pullRequestNumber = (int)eventContext.WebHookEvent.GetPayload().pull_request.number;
 
             // we have only one branch of each repository
-            var subscription = await _sofiaDbContext.Subscriptions.Where(q => q.RepositoryId == repositoryId).SingleOrDefaultAsync();
+            var subscription = await _SophiaDbContext.Subscriptions.Where(q => q.RepositoryId == repositoryId).SingleOrDefaultAsync();
 
             if (subscription == null)
                 return;
@@ -82,9 +82,9 @@ namespace Sofia.WebHooksHandling
             var pullRequest = await GetPullRequest(eventContext.InstallationContext.AccessToken.Token,
                 pullRequestNumber, repositoryOwner, repositoryName,subscription.Id,eventContext);
 
-            _sofiaDbContext.Add(pullRequest);
+            _SophiaDbContext.Add(pullRequest);
 
-            await _sofiaDbContext.SaveChangesAsync();
+            await _SophiaDbContext.SaveChangesAsync();
         }
 
         private async Task<PullRequest> GetPullRequest(string token, int pullRequestNumber, string repositoryOwner,string repositoryName,long subscriptionId,EventContext eventContext)

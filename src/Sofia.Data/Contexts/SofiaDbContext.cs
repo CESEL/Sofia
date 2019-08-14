@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Sofia.Data.Models;
+using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Sofia.Data.Contexts
+namespace Sophia.Data.Contexts
 {
-    public class SofiaDbContext :DbContext
+    public class SophiaDbContext :DbContext
     {
-        public SofiaDbContext(DbContextOptions<SofiaDbContext> options) : base(options)
+        public SophiaDbContext(DbContextOptions<SophiaDbContext> options) : base(options)
         {
             Database.SetCommandTimeout(TimeSpan.FromHours(2));
         }

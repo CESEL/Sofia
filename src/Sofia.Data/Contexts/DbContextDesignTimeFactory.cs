@@ -6,22 +6,22 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Sofia.Data.Contexts
+namespace Sophia.Data.Contexts
 {
 
-    public class DbContextDesignTimeFactory : IDesignTimeDbContextFactory<SofiaDbContext>
+    public class DbContextDesignTimeFactory : IDesignTimeDbContextFactory<SophiaDbContext>
     {
         public DbContextDesignTimeFactory()
         {
 
         }
 
-        public SofiaDbContext CreateDbContext(string[] args)
+        public SophiaDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<SofiaDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<SophiaDbContext>();
             optionsBuilder.UseSqlServer($@"");
 
-            return new SofiaDbContext(optionsBuilder.Options);
+            return new SophiaDbContext(optionsBuilder.Options);
         }
     }
 }

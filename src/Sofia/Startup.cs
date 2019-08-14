@@ -16,23 +16,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Hangfire;
 using Hangfire.SqlServer;
-using Sofia.Data.Contexts;
-using Sofia.InformationGathering.GitHub;
+using Sophia.Data.Contexts;
+using Sophia.InformationGathering.GitHub;
 using Polly;
-using Sofia.WebHooksHandling;
+using Sophia.WebHooksHandling;
 using Microsoft.Extensions.Options;
-using Sofia.Jobs;
+using Sophia.Jobs;
 using System.Data.SqlClient;
 using Octokit.Bot;
-using Sofia.WebHooksHandling.Commands;
+using Sophia.WebHooksHandling.Commands;
 using System.Net.Http;
 using Polly.Extensions.Http;
 using System.Threading.Tasks;
 using Seq.Extensions.Logging;
 using Microsoft.Extensions.Logging;
-using Sofia.Jobs.ScaningSteps;
+using Sophia.Jobs.ScaningSteps;
 
-namespace Sofia
+namespace Sophia
 {
     public class Startup
     {
@@ -60,8 +60,8 @@ namespace Sofia
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<SofiaDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("SofiaConnection"),
+            services.AddDbContext<SophiaDbContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("SophiaConnection"),
                 providerOptions => providerOptions.EnableRetryOnFailure()));
 
             services.AddHttpClient<GitHubRepositoryPullRequestService>()
@@ -150,7 +150,7 @@ namespace Sofia
         {
             protected override void Load(ContainerBuilder builder)
             {
-                builder.RegisterType<SofiaDbContext>().As<DbContext>()
+                builder.RegisterType<SophiaDbContext>().As<DbContext>()
                     .InstancePerLifetimeScope();
 
                 builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())

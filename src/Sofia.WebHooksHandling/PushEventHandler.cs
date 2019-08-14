@@ -3,26 +3,26 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.WebHooksHandling
+namespace Sophia.WebHooksHandling
 {
     public class PushEventHandler : IHookHandler
     {
         private ILogger<PushEventHandler> _logger;
-        private SofiaDbContext _sofiaDbContext;
+        private SophiaDbContext _SophiaDbContext;
 
-        public PushEventHandler(SofiaDbContext sofiaDbContext, ILogger<PushEventHandler> logger)
+        public PushEventHandler(SophiaDbContext SophiaDbContext, ILogger<PushEventHandler> logger)
         {
             _logger = logger;
-            _sofiaDbContext = sofiaDbContext;
+            _SophiaDbContext = SophiaDbContext;
         }
 
         public async Task Handle(EventContext eventContext)
@@ -60,7 +60,7 @@ namespace Sofia.WebHooksHandling
             long repositoryId = (long)eventContext.WebHookEvent.GetPayload().repository.id;
             var branch = eventContext.WebHookEvent.JsonPayload["ref"].Value<string>().Replace("refs/heads/", "");
 
-            var subscription = await _sofiaDbContext.Subscriptions.Where(q => q.RepositoryId == repositoryId && q.Branch == branch).SingleOrDefaultAsync();
+            var subscription = await _SophiaDbContext.Subscriptions.Where(q => q.RepositoryId == repositoryId && q.Branch == branch).SingleOrDefaultAsync();
 
             if (subscription == null)
                 return;
@@ -71,7 +71,7 @@ namespace Sofia.WebHooksHandling
             var commits = eventContext.WebHookEvent.GetPayload().commits;
             var commitShas = GetCommitShas(commits);
 
-            var commitTraverser = new GitHubBasedGitCommitTraverser(_sofiaDbContext, subscription, commitShas);
+            var commitTraverser = new GitHubBasedGitCommitTraverser(_SophiaDbContext, subscription, commitShas);
             await commitTraverser.Traverse(eventContext, repositoryId);
         }
 

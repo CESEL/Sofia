@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Sofia.Models
+namespace Sophia.Models
 {
     public class RepositoryUrl
     {

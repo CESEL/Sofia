@@ -1,33 +1,33 @@
-﻿using Sofia.Data.Contexts;
+﻿using Sophia.Data.Contexts;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Sofia.InformationGathering;
+using Sophia.InformationGathering;
 using Microsoft.Extensions.DependencyInjection;
-using Sofia.Data.Models;
+using Sophia.Data.Models;
 using System.Threading;
 using Microsoft.Extensions.Options;
 using Octokit.Bot;
-using Sofia.InformationGathering.GitHub;
+using Sophia.InformationGathering.GitHub;
 using Microsoft.Extensions.Logging;
 
-namespace Sofia.Jobs
+namespace Sophia.Jobs
 {
     public class ApplyPullRequestsJob
     {
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private ILogger<ApplyPullRequestsJob> _logger;
         private IServiceProvider _serviceProvider;
-        private SofiaDbContext _sofiaDbContext;
+        private SophiaDbContext _SophiaDbContext;
 
-        public ApplyPullRequestsJob(SofiaDbContext sofiaDbContext
+        public ApplyPullRequestsJob(SophiaDbContext SophiaDbContext
             , IServiceProvider serviceProvider
             ,ILogger<ApplyPullRequestsJob> logger)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _sofiaDbContext = sofiaDbContext;
+            _SophiaDbContext = SophiaDbContext;
         }
 
         public async Task Apply()
@@ -76,7 +76,7 @@ namespace Sofia.Jobs
 
         private async Task<long[]> GetSubscriptions()
         {
-            var subscriptionIds = await _sofiaDbContext
+            var subscriptionIds = await _SophiaDbContext
                 .PullRequests
                 .Where(q => q.PullRequestAnalyzeStatus==PullRequestAnalyzeStatus.NotAnalyzed && q.Subscription.ScanningStatus==SubscriptionStatus.Completed)
                 .Take(100)
@@ -91,14 +91,14 @@ namespace Sofia.Jobs
         {
             using (var scope=_serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<SofiaDbContext>();
+                var dbContext = scope.ServiceProvider.GetService<SophiaDbContext>();
                 var gitHubOption = scope.ServiceProvider.GetService<IOptions<GitHubOption>>().Value;
                 var gitHubRepositoryPullRequestService = scope.ServiceProvider.GetService<GitHubRepositoryPullRequestService>();
                 await AnalyzePullRequests(subscriptionId, dbContext, gitHubOption, gitHubRepositoryPullRequestService);
             }
         }
 
-        private async Task AnalyzePullRequests(long subscriptionId, SofiaDbContext dbContext, GitHubOption gitHubOption, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService)
+        private async Task AnalyzePullRequests(long subscriptionId, SophiaDbContext dbContext, GitHubOption gitHubOption, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService)
         {
             try
             {

@@ -1,35 +1,35 @@
-﻿using Sofia.Data.Contexts;
+﻿using Sophia.Data.Contexts;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Sofia.InformationGathering;
+using Sophia.InformationGathering;
 using Microsoft.Extensions.DependencyInjection;
-using Sofia.Data.Models;
-using Sofia.InformationGathering.GitHub;
+using Sophia.Data.Models;
+using Sophia.InformationGathering.GitHub;
 using Microsoft.Extensions.Options;
 using System.Threading;
 using Octokit.Bot;
 using Microsoft.Extensions.Logging;
 
-namespace Sofia.Jobs
+namespace Sophia.Jobs
 {
     public class ScanRepositoriesJob
     {
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private IServiceProvider _serviceProvider;
-        private SofiaDbContext _sofiaDbContext;
+        private SophiaDbContext _SophiaDbContext;
         private IOptions<GitHubOption> _gitHubOptions;
         private ILogger<ScanRepositoriesJob> _logger;
 
-        public ScanRepositoriesJob(SofiaDbContext sofiaDbContext,
+        public ScanRepositoriesJob(SophiaDbContext SophiaDbContext,
             IOptions<GitHubOption> gitHubOptions, 
             IServiceProvider serviceProvider,
             ILogger<ScanRepositoriesJob> logger)
         {
             _serviceProvider = serviceProvider;
-            _sofiaDbContext = sofiaDbContext;
+            _SophiaDbContext = SophiaDbContext;
             _gitHubOptions = gitHubOptions;
             _logger = logger;
         }
@@ -80,7 +80,7 @@ namespace Sofia.Jobs
 
         private async Task<Subscription[]> GetSubscriptionsToRefresh()
         {
-            var unscannedSubscriptions = await _sofiaDbContext
+            var unscannedSubscriptions = await _SophiaDbContext
                 .Subscriptions
                 .Where(q => q.ScanningStatus!= SubscriptionStatus.Completed)
                 .OrderBy(q => q.SubscriptionDateTime)

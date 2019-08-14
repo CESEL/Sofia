@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Octokit.Bot;
-using Sofia.Jobs;
+using Sophia.Jobs;
 
-namespace Sofia.GitHubHandling
+namespace Sophia.GitHubHandling
 {
     [ApiController]
     [Route("github")]

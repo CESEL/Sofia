@@ -1,20 +1,20 @@
 ﻿using Octokit;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.Recommending.RecommendationStraregies;
-using Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
-using Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.Recommending.RecommendationStraregies;
+using Sophia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
+using Sophia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sofia.Recommending
+namespace Sophia.Recommending
 {
     public class CodeReviewerRecommender
     {
-        private SofiaDbContext _dbContext;
+        private SophiaDbContext _dbContext;
         private RecommenderType _recommenderType;
 
-        public CodeReviewerRecommender(RecommenderType recommenderType, SofiaDbContext dbContext)
+        public CodeReviewerRecommender(RecommenderType recommenderType, SophiaDbContext dbContext)
         {
             _dbContext = dbContext;
             _recommenderType = recommenderType;

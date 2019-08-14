@@ -3,15 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering.GitHub;
-using Sofia.Jobs.ScaningSteps;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering.GitHub;
+using Sophia.Jobs.ScaningSteps;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class RepositoryScanner
     {
@@ -46,7 +46,7 @@ namespace Sofia.InformationGathering
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<SofiaDbContext>();
+                var dbContext = scope.ServiceProvider.GetService<SophiaDbContext>();
                 
                 var pullRequestAnalyzingJob = new PullRequestAnalyzingStep(dbContext);
                 await pullRequestAnalyzingJob.Execute(subscriptionId);
@@ -58,7 +58,7 @@ namespace Sofia.InformationGathering
             using (var scope = _serviceProvider.CreateScope())
             {
                 var pullRequestGatheringStep = new PullRequestGatheringStep(
-                    scope.ServiceProvider.GetService<SofiaDbContext>(),
+                    scope.ServiceProvider.GetService<SophiaDbContext>(),
                     scope.ServiceProvider.GetService<GitHubRepositoryPullRequestService>(),
                     scope.ServiceProvider.GetService<IOptions<GitHubOption>>().Value);
 
@@ -70,7 +70,7 @@ namespace Sofia.InformationGathering
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var commitGatheringStep = new CommitGatheringStep(scope.ServiceProvider.GetService<SofiaDbContext>()
+                var commitGatheringStep = new CommitGatheringStep(scope.ServiceProvider.GetService<SophiaDbContext>()
                     , scope.ServiceProvider.GetService<IOptions<GitHubOption>>().Value);
                 await commitGatheringStep.Execute(subscriptionId);
             }
@@ -81,7 +81,7 @@ namespace Sofia.InformationGathering
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<SofiaDbContext>();
+                var dbContext = scope.ServiceProvider.GetService<SophiaDbContext>();
                 var gitHubOption = scope.ServiceProvider.GetService<IOptions<GitHubOption>>().Value;
 
                 var clonningJob = new RepositoryCloningStep(dbContext,gitHubOption);
@@ -93,7 +93,7 @@ namespace Sofia.InformationGathering
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<SofiaDbContext>();
+                var dbContext = scope.ServiceProvider.GetService<SophiaDbContext>();
                 var gitHubOption = scope.ServiceProvider.GetService<IOptions<GitHubOption>>().Value;
 
                 var subscription = await dbContext.Subscriptions.SingleAsync(q=>q.Id == subscriptionId);
@@ -103,7 +103,7 @@ namespace Sofia.InformationGathering
 
                 var installationContext = await GitHubClientFactory.CreateGitHubInstallationClient(gitHubOption,subscription.InstallationId);
 
-                await installationContext.Client.Issue.Comment.Create(subscription.RepositoryId, subscription.IssueNumber, "@SofiaRec has scanned the whole repository. From now on you can ask for recommendations for pull requests that are going to merge to the master branch.");
+                await installationContext.Client.Issue.Comment.Create(subscription.RepositoryId, subscription.IssueNumber, "sophia has scanned the whole repository. From now on you can ask for recommendations for pull requests that are going to merge to the master branch.");
                 subscription.ScanningStatus = SubscriptionStatus.Completed;
 
                 await dbContext.SaveChangesAsync();

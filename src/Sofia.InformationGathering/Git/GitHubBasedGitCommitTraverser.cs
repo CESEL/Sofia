@@ -7,29 +7,29 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using RelationalGit;
-using Sofia.Data.Models;
+using Sophia.Data.Models;
 using System.Collections.ObjectModel;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
-using Sofia.Data;
+using Sophia.Data;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class GitHubBasedGitCommitTraverser
     {
 
         #region Fields
 
-        private readonly SofiaDbContext _sofiaDbContext;
+        private readonly SophiaDbContext _SophiaDbContext;
         private readonly string[] _commitShas;
         private readonly Subscription _subscription;
 
         #endregion
 
-        public GitHubBasedGitCommitTraverser(SofiaDbContext dbContext,Subscription subscription, string[] commitShas)
+        public GitHubBasedGitCommitTraverser(SophiaDbContext dbContext,Subscription subscription, string[] commitShas)
         {
-            _sofiaDbContext = dbContext;
+            _SophiaDbContext = dbContext;
             _commitShas = commitShas;
             _subscription = subscription;
         }
@@ -39,7 +39,7 @@ namespace Sofia.InformationGathering
             var sortedCommits = await SortCommits(eventContext, repositoryId);
             await AnalyzeCommits(eventContext, sortedCommits);
 
-            _sofiaDbContext.SaveChanges();
+            _SophiaDbContext.SaveChanges();
         }
 
         private async Task AnalyzeCommits(EventContext eventContext, Data.Commit[] sortedCommits)
@@ -50,15 +50,15 @@ namespace Sofia.InformationGathering
                 eventContext.InstallationContext.Client,
                 contributors,
                 fileCanonicalMapper,
-                _sofiaDbContext);
+                _SophiaDbContext);
 
             foreach (var commit in sortedCommits)
             {
                 await commitAnalyzer.AnalayzeCommit(commit);
             }
 
-            await _sofiaDbContext.AddRangeAsync(commitAnalyzer.GetNewContributors());
-            await _sofiaDbContext.AddRangeAsync(sortedCommits);
+            await _SophiaDbContext.AddRangeAsync(commitAnalyzer.GetNewContributors());
+            await _SophiaDbContext.AddRangeAsync(sortedCommits);
         }
 
         private async Task<Data.Commit[]> SortCommits(EventContext eventContext, long repositoryId)
@@ -113,14 +113,14 @@ namespace Sofia.InformationGathering
 
         private bool IsCommitAlreadyAnalyzed(long subscriptionId, string commitSha)
         {
-            return _sofiaDbContext
+            return _SophiaDbContext
                             .Contributions
                             .Any(q => q.ActivityId == commitSha && q.SubscriptionId == subscriptionId && q.ContributionType == ContributionType.Commit);
         }
 
         private async Task<Dictionary<string, Data.Models.Contributor>> GetContributors(long subscriptionId)
         {
-            return await _sofiaDbContext.Contributors
+            return await _SophiaDbContext.Contributors
                  .Where(q => q.SubscriptionId == subscriptionId)
                  .ToDictionaryAsync(q => q.CanonicalName);
         }
@@ -129,7 +129,7 @@ namespace Sofia.InformationGathering
         {
             var fileCanonicalMapper = new Dictionary<string, string>();
 
-            var fileHistories = await _sofiaDbContext.FileHistories
+            var fileHistories = await _SophiaDbContext.FileHistories
                 .AsNoTracking()
                 .Include(q => q.File)
                 .Where(q => q.SubscriptionId == subscriptionId)

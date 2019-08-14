@@ -8,10 +8,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using Sofia.Data.Models;
+using Sophia.Data.Models;
 using System.Net;
 
-namespace Sofia.InformationGathering.GitHub
+namespace Sophia.InformationGathering.GitHub
 {
     public class GitHubRepositoryPullRequestService
     {
@@ -20,7 +20,7 @@ namespace Sofia.InformationGathering.GitHub
         public GitHubRepositoryPullRequestService(HttpClient client)
         {
             client.BaseAddress = new Uri("https://api.github.com");
-            client.DefaultRequestHeaders.Add("User-Agent", "SofiaApp");
+            client.DefaultRequestHeaders.Add("User-Agent", "SophiaApp");
             Client = client;
         }
 

@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Octokit.Bot;
 using Polly;
-using Sofia.Data;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering.GitHub;
+using Sophia.Data;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering.GitHub;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs.ScaningSteps
+namespace Sophia.Jobs.ScaningSteps
 {
     public class PullRequestGatheringStep:Step
     {
@@ -23,7 +23,7 @@ namespace Sofia.Jobs.ScaningSteps
 
         public override SubscriptionStatus PostConditionStatus => SubscriptionStatus.PullRequestsGatheringCompleted;
 
-        public PullRequestGatheringStep(SofiaDbContext dbContext, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService, GitHubOption gitHubOption)
+        public PullRequestGatheringStep(SophiaDbContext dbContext, GitHubRepositoryPullRequestService gitHubRepositoryPullRequestService, GitHubOption gitHubOption)
             :base(dbContext)
         {
             _gitHubRepositoryPullRequestService = gitHubRepositoryPullRequestService;

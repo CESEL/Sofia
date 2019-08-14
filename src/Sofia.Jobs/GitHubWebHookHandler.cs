@@ -1,7 +1,7 @@
 ﻿using Octokit.Bot;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs
+namespace Sophia.Jobs
 {
     public class GitHubWebHookHandler
     {

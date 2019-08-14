@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sofia.Data.Models
+namespace Sophia.Data.Models
 {
     public class File:IEntity
     {

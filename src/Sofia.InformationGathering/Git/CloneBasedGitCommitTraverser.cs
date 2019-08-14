@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using RelationalGit;
-using Sofia.Data.Models;
+using Sophia.Data.Models;
 using System.Collections.ObjectModel;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class CloneBasedGitCommitTraverser
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy
+namespace Sophia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy
 {
     public class PersistBasedSpreadingCandidate: MetaCandidate<PersistBasedSpreadingMetaCandidateInfo>
     {

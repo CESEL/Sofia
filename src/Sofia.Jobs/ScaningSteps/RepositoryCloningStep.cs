@@ -1,14 +1,14 @@
 ﻿using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.InformationGathering;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.InformationGathering;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs.ScaningSteps
+namespace Sophia.Jobs.ScaningSteps
 {
     public class RepositoryCloningStep:Step
     {
@@ -21,7 +21,7 @@ namespace Sofia.Jobs.ScaningSteps
 
         public override SubscriptionStatus PostConditionStatus => SubscriptionStatus.ClonningCompleted;
 
-        public RepositoryCloningStep(SofiaDbContext dbContext, GitHubOption gitHubOption) :base(dbContext)
+        public RepositoryCloningStep(SophiaDbContext dbContext, GitHubOption gitHubOption) :base(dbContext)
         {
             _gitHubOption = gitHubOption;
         }

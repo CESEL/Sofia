@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using Octokit.Bot;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
-using Sofia.Recommending;
-using Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
-using Sofia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
-namespace Sofia.WebHooksHandling.Commands
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
+using Sophia.Recommending;
+using Sophia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy;
+using Sophia.Recommending.RecommendationStraregies.PersistBasedSpreadingRecommendationStrategy;
+namespace Sophia.WebHooksHandling.Commands
 {
     public class CombinationRecommendCommand : ICommandHandler
     {
@@ -28,7 +28,7 @@ namespace Sofia.WebHooksHandling.Commands
             if (authorAssociation != "OWNER" && authorAssociation != "MEMBER" && authorAssociation != "COLLABORATOR")
                 return false;
 
-            if (!string.Equals(parts[0], "@sophia", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(parts[0], "sophia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (!string.Equals(parts[1], "suggest", StringComparison.OrdinalIgnoreCase))
@@ -46,7 +46,7 @@ namespace Sofia.WebHooksHandling.Commands
             return true;
         }
 
-        public async Task Execute(string action,string[] parts, string authorAssociation, EventContext eventContext, SofiaDbContext dbContext)
+        public async Task Execute(string action,string[] parts, string authorAssociation, EventContext eventContext, SophiaDbContext dbContext)
         {
 
             var issueNumber = (int)eventContext.WebHookEvent.GetPayload().issue.number;
@@ -55,9 +55,9 @@ namespace Sofia.WebHooksHandling.Commands
 
             var top = 10;
 
-            if (parts.Length == 5)
+            if (parts.Length == 4)
             {
-                top = int.Parse(parts[4]);
+                top = int.Parse(parts[3]);
             }
 
             if (subscription == null)
@@ -65,7 +65,7 @@ namespace Sofia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "You have not registered the repository. First, you need to ask SofiaRec to scan it before asking for suggestions.");
+                    "You have not registered the repository. First, you need to ask Sophia to scan it before asking for suggestions.");
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Sofia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "SofiaRec has not yet finished scanning the repository. You can ask for suggestion once it is done.");
+                    "Sophia has not yet finished scanning the repository. You can ask for suggestion once it is done.");
                 return;
             }
 
@@ -86,12 +86,12 @@ namespace Sofia.WebHooksHandling.Commands
             {
                 await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "It's not a pull request. Sofia suggests reviewers for pull requests.");
+                    "It's not a pull request. Sophia suggests reviewers for pull requests.");
             }
 
         }
 
-        private async Task GetCandidates(EventContext eventContext, SofiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
+        private async Task GetCandidates(EventContext eventContext, SophiaDbContext dbContext, int issueNumber, long repositoryId, Data.Models.Subscription subscription, int topCandidatesLength)
         {
             var installationClient = eventContext.InstallationContext.Client;
             var pullRequest = await installationClient.PullRequest.Get(repositoryId, issueNumber);
@@ -109,21 +109,21 @@ namespace Sofia.WebHooksHandling.Commands
             await installationClient.Issue.Comment.Create(repositoryId, issueNumber, message);
         }
 
-        private async Task<IEnumerable<Recommending.Candidate>> GetLearnerCandidates(SofiaDbContext dbContext, long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles, int topCandidatesLength)
+        private async Task<IEnumerable<Recommending.Candidate>> GetLearnerCandidates(SophiaDbContext dbContext, long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles, int topCandidatesLength)
         {
             var recommender = new CodeReviewerRecommender(RecommenderType.KnowledgeRec, dbContext);
             var candidates = await recommender.Recommend(subscriptionId, pullRequest, pullRequestFiles, topCandidatesLength);
             return candidates;
         }
 
-        private async Task<IEnumerable<Recommending.Candidate>> GetExpertCandidates(SofiaDbContext dbContext, long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles, int topCandidatesLength)
+        private async Task<IEnumerable<Recommending.Candidate>> GetExpertCandidates(SophiaDbContext dbContext, long subscriptionId, Octokit.PullRequest pullRequest, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles, int topCandidatesLength)
         {
             var recommender = new CodeReviewerRecommender(RecommenderType.Chrev, dbContext);
             var candidates = await recommender.Recommend(subscriptionId, pullRequest, pullRequestFiles, topCandidatesLength);
             return candidates;
         }
 
-        private async Task<Dictionary<string, List<long>>> GetFileOwners(SofiaDbContext dbContext,long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
+        private async Task<Dictionary<string, List<long>>> GetFileOwners(SophiaDbContext dbContext,long subscriptionId, IReadOnlyList<Octokit.PullRequestFile> pullRequestFiles)
         {
             var fileOwners = new Dictionary<string, List<long>>();
 
@@ -153,13 +153,13 @@ namespace Sofia.WebHooksHandling.Commands
             return fileOwners;
         }
 
-        private Task<bool> IsContributorActive(SofiaDbContext dbContext, long subscriptionId, long contributorId)
+        private Task<bool> IsContributorActive(SophiaDbContext dbContext, long subscriptionId, long contributorId)
         {
             var lastCheck = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(90));
             return dbContext.Contributions.AnyAsync(q => q.SubscriptionId == subscriptionId && q.ContributorId == contributorId && q.DateTime > lastCheck);
         }
 
-        private async Task<File> GetFile(SofiaDbContext dbContext, long subscriptionId, Octokit.PullRequestFile pullRequestFile)
+        private async Task<File> GetFile(SophiaDbContext dbContext, long subscriptionId, Octokit.PullRequestFile pullRequestFile)
         {
             var fileHistory = await dbContext.FileHistories.Where(q => q.Path == pullRequestFile.FileName && q.SubscriptionId == subscriptionId)
                 .Include(q => q.File)
@@ -171,7 +171,7 @@ namespace Sofia.WebHooksHandling.Commands
             return fileHistory?.File;
         }
 
-        private async Task SaveCandidates(SofiaDbContext dbContext, IEnumerable<Recommending.Candidate> experts, IEnumerable<Recommending.Candidate> learners, Octokit.PullRequest pullRequest, Data.Models.Subscription subscription)
+        private async Task SaveCandidates(SophiaDbContext dbContext, IEnumerable<Recommending.Candidate> experts, IEnumerable<Recommending.Candidate> learners, Octokit.PullRequest pullRequest, Data.Models.Subscription subscription)
         {
             var dateTime = DateTimeOffset.UtcNow;
 
@@ -204,40 +204,40 @@ namespace Sofia.WebHooksHandling.Commands
 
             if(expertCandidates.Count() + learnerCandidates.Count() == 0)
             {
-                return "Sorry! Sofia couldn't find any potential reviewer.";
+                return "Sorry! Sophia couldn't find any potential reviewer.";
             }
 
             var totalFiles = pullRequestFiles.Count();
-            var message = "Sofia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
+            var message = "Sophia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
 
             if (fileOwners.Any(q => q.Value.Count() < 3))
             {
-                message += "**_Note_**: Sofia believes at least one of the files are at risk of loss. It is suggested to assign a learner to distribute knowledge" + Environment.NewLine + Environment.NewLine; 
+                message += "**_Note_**: Sophia believes at least one of the files are at risk of loss. It is suggested to assign a learner to distribute knowledge" + Environment.NewLine + Environment.NewLine; 
             }
 
             if (expertCandidates.Count() > 0)
             {
-                message += "Sofia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
+                message += "Sophia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
 
-                message += "| Rank | Name | Ownership | Learning | Active Months |" + Environment.NewLine; ;
-                message += "| - | - | - | - | - |" + Environment.NewLine;
+                message += "| Rank | Name | Files Authored | Files Reviewed | New Files | Active Months |" + Environment.NewLine;
+                message += "| - | - | - | - | - | - |" + Environment.NewLine;
 
                 foreach (var candidate in expertCandidates.Cast<ChrevCandidate>())
                 {
-                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
+                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalReviewedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
                 }
             }
 
             if (learnerCandidates.Count() > 0)
             {
-                message += Environment.NewLine + "Sofia has found following **_Potential Learners_**." + Environment.NewLine + Environment.NewLine;
+                message += Environment.NewLine + "Sophia has found following **_Potential Learners_**." + Environment.NewLine + Environment.NewLine;
 
-                message += "| Rank | Name | Ownership | Learning | Active Months |" + Environment.NewLine; ;
-                message += "| - | - | - | - | - |" + Environment.NewLine;
+                message += "| Rank | Name | Files Authored | Files Reviewed | New Files | Active Months |" + Environment.NewLine;
+                message += "| - | - | - | - | - | - |" + Environment.NewLine;
 
                 foreach (var candidate in learnerCandidates.Cast<PersistBasedSpreadingCandidate>())
                 {
-                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
+                    message += $"| {candidate.Rank} | {candidate.Contributor.GitHubLogin} | {candidate.Meta.TotalModifiedFiles} / {totalFiles} | {candidate.Meta.TotalReviewedFiles} / {totalFiles} | {candidate.Meta.TotalNewFiles} / {totalFiles} | {candidate.Meta.TotalActiveMonths} / 12 |" + Environment.NewLine;
                 }
             }
 

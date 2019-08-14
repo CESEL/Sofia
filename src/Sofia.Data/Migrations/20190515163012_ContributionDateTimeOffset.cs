@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Sofia.Data.Migrations
+namespace Sophia.Data.Migrations
 {
     public partial class ContributionDateTimeOffset : Migration
     {

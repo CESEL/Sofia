@@ -1,19 +1,19 @@
-﻿using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+﻿using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace Sofia.Jobs.ScaningSteps
+namespace Sophia.Jobs.ScaningSteps
 {
     public abstract class Step
     {
         public abstract SubscriptionStatus PreConditionStatus { get;  }
         public abstract SubscriptionStatus MidConditionStatus { get; }
         public abstract SubscriptionStatus PostConditionStatus { get; }
-        protected SofiaDbContext DbContext { get; }
+        protected SophiaDbContext DbContext { get; }
         protected Subscription Subscription { get; private set; }
 
-        public Step(SofiaDbContext dbContext)
+        public Step(SophiaDbContext dbContext)
         {
             DbContext = dbContext;
         }

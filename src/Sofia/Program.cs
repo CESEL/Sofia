@@ -11,9 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 
-namespace Sofia
+namespace Sophia
 {
     public class Program
     {
@@ -29,7 +29,7 @@ namespace Sofia
         {
             using (var serviceScope = host.Services.CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<SofiaDbContext>();
+                var context = serviceScope.ServiceProvider.GetRequiredService<SophiaDbContext>();
                 context.Database.Migrate();
             }
         }

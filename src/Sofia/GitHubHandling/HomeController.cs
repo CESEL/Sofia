@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Sofia.GitHubHandling
+namespace Sophia.GitHubHandling
 {
     public class HomeController : Controller
     {

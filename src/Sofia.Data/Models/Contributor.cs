@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sofia.Data.Models
+namespace Sophia.Data.Models
 {
     public class Contributor:IEntity
     {

@@ -1,24 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Octokit;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy
+namespace Sophia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy
 {
     public class ChrevRecommender : Recommender
     {
-        private SofiaDbContext _dbContext;
+        private SophiaDbContext _dbContext;
         private Dictionary<string, ChrevCandidate> _dicCandidates = new Dictionary<string, ChrevCandidate>();
         private ChrevCandidate[] _candidates;
         private Dictionary<string,long> _fileIds = new Dictionary<string, long>();
         private Dictionary<string, List<Contribution>> _dicFiles = new Dictionary<string, List<Contribution>>();
 
-        public ChrevRecommender(SofiaDbContext dbContext)
+        public ChrevRecommender(SophiaDbContext dbContext)
         {
             _dbContext = dbContext;
         }

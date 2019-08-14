@@ -1,6 +1,6 @@
 using System;
 
-namespace Sofia.Models
+namespace Sophia.Models
 {
     public class ErrorViewModel
     {

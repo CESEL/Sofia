@@ -1,11 +1,11 @@
 ﻿using Octokit;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sofia.Recommending.RecommendationStraregies
+namespace Sophia.Recommending.RecommendationStraregies
 {
     public interface Recommender
     {

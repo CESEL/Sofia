@@ -1,8 +1,8 @@
 ﻿using Diacritics.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Sofia.Data;
-using Sofia.Data.Contexts;
-using Sofia.Data.Models;
+using Sophia.Data;
+using Sophia.Data.Contexts;
+using Sophia.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,11 +10,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Sofia.InformationGathering
+namespace Sophia.InformationGathering
 {
     public class CommitAnalyzer
     {
-        private SofiaDbContext _dbContext;
+        private SophiaDbContext _dbContext;
         private Dictionary<string, string> _fileCanonicalMapper = new Dictionary<string, string>();
         private Dictionary<string, string> _contributorCanonicalMapper = new Dictionary<string, string>();
         private Dictionary<string, File> _files = new Dictionary<string, File>();
@@ -23,7 +23,7 @@ namespace Sofia.InformationGathering
         private readonly Subscription _subscription;
         private readonly Octokit.GitHubClient _installationClient;
 
-        public CommitAnalyzer(Subscription subscription, Octokit.GitHubClient installationClient, Dictionary<string, Contributor> contributors=null, Dictionary<string, string> fileCanonicalMapper = null, SofiaDbContext dbContext=null)
+        public CommitAnalyzer(Subscription subscription, Octokit.GitHubClient installationClient, Dictionary<string, Contributor> contributors=null, Dictionary<string, string> fileCanonicalMapper = null, SophiaDbContext dbContext=null)
         {
             _fileCanonicalMapper = fileCanonicalMapper ?? new Dictionary<string, string>();
             _contributors = contributors ?? new Dictionary<string, Contributor>();

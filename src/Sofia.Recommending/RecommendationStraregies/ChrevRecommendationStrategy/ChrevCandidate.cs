@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sofia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy
+namespace Sophia.Recommending.RecommendationStraregies.ChrevRecommendationStrategy
 {
     public class ChrevCandidate : MetaCandidate<ChrevMetaCandidateInfo>
     {

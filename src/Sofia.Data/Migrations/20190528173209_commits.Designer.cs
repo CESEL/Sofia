@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Sofia.Data.Contexts;
+using Sophia.Data.Contexts;
 
-namespace Sofia.Data.Migrations
+namespace Sophia.Data.Migrations
 {
-    [DbContext(typeof(SofiaDbContext))]
+    [DbContext(typeof(SophiaDbContext))]
     [Migration("20190528173209_commits")]
     partial class commits
     {
@@ -21,7 +21,7 @@ namespace Sofia.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Sofia.Data.Commit", b =>
+            modelBuilder.Entity("Sophia.Data.Commit", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,7 +44,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Commits");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.Contribution", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Contribution", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +80,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Contributions");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.Contributor", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Contributor", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,7 +99,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Contributors");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.File", b =>
+            modelBuilder.Entity("Sophia.Data.Models.File", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +116,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.FileHistory", b =>
+            modelBuilder.Entity("Sophia.Data.Models.FileHistory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,7 +146,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("FileHistories");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.PullRequest", b =>
+            modelBuilder.Entity("Sophia.Data.Models.PullRequest", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -168,7 +168,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("PullRequests");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.Subscription", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Subscription", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace Sofia.Data.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.SubscriptionEvent", b =>
+            modelBuilder.Entity("Sophia.Data.Models.SubscriptionEvent", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -223,81 +223,81 @@ namespace Sofia.Data.Migrations
                     b.ToTable("SubscriptionEvents");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Commit", b =>
+            modelBuilder.Entity("Sophia.Data.Commit", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Contributor", "Contributor")
+                    b.HasOne("Sophia.Data.Models.Contributor", "Contributor")
                         .WithMany()
                         .HasForeignKey("ContributorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.Contribution", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Contribution", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Contributor", "Contributor")
+                    b.HasOne("Sophia.Data.Models.Contributor", "Contributor")
                         .WithMany("Contributions")
                         .HasForeignKey("ContributorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Sofia.Data.Models.File", "File")
+                    b.HasOne("Sophia.Data.Models.File", "File")
                         .WithMany("Contributions")
                         .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.Contributor", b =>
+            modelBuilder.Entity("Sophia.Data.Models.Contributor", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.File", b =>
+            modelBuilder.Entity("Sophia.Data.Models.File", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.FileHistory", b =>
+            modelBuilder.Entity("Sophia.Data.Models.FileHistory", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Contribution", "Contribution")
+                    b.HasOne("Sophia.Data.Models.Contribution", "Contribution")
                         .WithMany()
                         .HasForeignKey("ContributionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Sofia.Data.Models.File", "File")
+                    b.HasOne("Sophia.Data.Models.File", "File")
                         .WithMany("FileHistories")
                         .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.PullRequest", b =>
+            modelBuilder.Entity("Sophia.Data.Models.PullRequest", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId");
                 });
 
-            modelBuilder.Entity("Sofia.Data.Models.SubscriptionEvent", b =>
+            modelBuilder.Entity("Sophia.Data.Models.SubscriptionEvent", b =>
                 {
-                    b.HasOne("Sofia.Data.Models.Subscription", "Subscription")
+                    b.HasOne("Sophia.Data.Models.Subscription", "Subscription")
                         .WithMany("SubscriptionEvents")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);

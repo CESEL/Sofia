@@ -23,11 +23,11 @@ namespace Sophia.WebHooksHandling.Commands
             if (await AlreadyScanned(dbContext,repositoryId))
             {
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
-                    .Create(repositoryId, issueNumber, "Sophia has already scanned this branch and is monitoring it.");
+                    .Create(repositoryId, issueNumber, "Sofia has already scanned this branch and is monitoring it.");
             }
             else
             {
-                var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment.Create(repositoryId, issueNumber, "Sophia just started to scan your repository. After Completion you can ask for suggestions for code reviewers!");
+                var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment.Create(repositoryId, issueNumber, "Sofia just started to scan your repository. After Completion you can ask for suggestions for code reviewers!");
                 await SaveSubscription(issueNumber, repositoryId, owenerName, repositoryName, repositoryUrl, branch, eventContext.WebHookEvent.GetInstallationId(), dbContext);
             }
         }
@@ -42,7 +42,7 @@ namespace Sophia.WebHooksHandling.Commands
             if (parts.Length != 4)
                 return false;
 
-            if (string.Equals(parts[0], "sophia", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parts[0], "sofia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (string.Equals(parts[1], "scan", StringComparison.OrdinalIgnoreCase))

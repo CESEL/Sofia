@@ -28,7 +28,7 @@ namespace Sophia.WebHooksHandling.Commands
             if (authorAssociation != "OWNER" && authorAssociation != "MEMBER" && authorAssociation != "COLLABORATOR")
                 return false;
 
-            if (!string.Equals(parts[0], "sophia", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(parts[0], "sofia", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (!string.Equals(parts[1], "suggest", StringComparison.OrdinalIgnoreCase))
@@ -65,7 +65,7 @@ namespace Sophia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "You have not registered the repository. First, you need to ask Sophia to scan it before asking for suggestions.");
+                    "You have not registered the repository. First, you need to ask Sofia to scan it before asking for suggestions.");
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Sophia.WebHooksHandling.Commands
 
                 var commentResponse = await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "Sophia has not yet finished scanning the repository. You can ask for suggestion once it is done.");
+                    "Sofia has not yet finished scanning the repository. You can ask for suggestion once it is done.");
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace Sophia.WebHooksHandling.Commands
             {
                 await eventContext.InstallationContext.Client.Issue.Comment
                     .Create(repositoryId, issueNumber,
-                    "It's not a pull request. Sophia suggests reviewers for pull requests.");
+                    "It's not a pull request. Sofia suggests reviewers for pull requests.");
             }
 
         }
@@ -204,20 +204,20 @@ namespace Sophia.WebHooksHandling.Commands
 
             if(expertCandidates.Count() + learnerCandidates.Count() == 0)
             {
-                return "Sorry! Sophia couldn't find any potential reviewer.";
+                return "Sorry! Sofia couldn't find any potential reviewer.";
             }
 
             var totalFiles = pullRequestFiles.Count();
-            var message = "Sophia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
+            var message = "Sofia's suggestions are as below" + Environment.NewLine + Environment.NewLine;
 
             if (fileOwners.Any(q => q.Value.Count() < 3))
             {
-                message += "**_Note_**: Sophia believes at least one of the files are at risk of loss. It is suggested to assign a learner to distribute knowledge" + Environment.NewLine + Environment.NewLine; 
+                message += "**_Note_**: Sofia believes at least one of the files are at risk of loss. It is suggested to assign a learner to distribute knowledge" + Environment.NewLine + Environment.NewLine; 
             }
 
             if (expertCandidates.Count() > 0)
             {
-                message += "Sophia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
+                message += "Sofia has found following **_Potential Experts_**." + Environment.NewLine + Environment.NewLine;
 
                 message += "| Rank | Name | Files Authored | Files Reviewed | New Files | Active Months |" + Environment.NewLine;
                 message += "| - | - | - | - | - | - |" + Environment.NewLine;
@@ -230,7 +230,7 @@ namespace Sophia.WebHooksHandling.Commands
 
             if (learnerCandidates.Count() > 0)
             {
-                message += Environment.NewLine + "Sophia has found following **_Potential Learners_**." + Environment.NewLine + Environment.NewLine;
+                message += Environment.NewLine + "Sofia has found following **_Potential Learners_**." + Environment.NewLine + Environment.NewLine;
 
                 message += "| Rank | Name | Files Authored | Files Reviewed | New Files | Active Months |" + Environment.NewLine;
                 message += "| - | - | - | - | - | - |" + Environment.NewLine;
